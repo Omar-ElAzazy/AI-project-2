@@ -34,7 +34,7 @@ public class CNF {
 	}
 
 	private static Expression discardUniversalQuantifiers(Expression e) {
-		if (e instanceof Variable || e instanceof Constant) {
+		if (e instanceof Variable || e instanceof Constant || e instanceof Function) {
 			return e;
 		}
 		else if (e instanceof UniversalQuantifier) {
@@ -194,7 +194,7 @@ public class CNF {
 	}
 
 	private static Expression pushNegationInwards(Expression e) throws IOException {
-		if (e instanceof Variable || e instanceof Constant) {
+		if (e instanceof Variable || e instanceof Constant || e instanceof Function) {
 			e.myExpression.get(0).negated = !e.myExpression.get(0).negated;
 			return e;
 		} else if (e instanceof And) {
@@ -214,7 +214,7 @@ public class CNF {
 	}
 
 	private static Expression eliminateImplication(Expression e) throws IOException {
-		if (e instanceof Variable || e instanceof Constant) {
+		if (e instanceof Variable || e instanceof Constant || e instanceof Function) {
 			return e;
 		}
 		else if (e instanceof Implication) {
@@ -243,7 +243,7 @@ public class CNF {
 	}
 
 	private static Expression eliminateDoubleImplication(Expression e) throws IOException {
-		if (e instanceof Variable || e instanceof Constant) {
+		if (e instanceof Variable || e instanceof Constant || e instanceof Function) {
 			return e;
 		}
 		else if (e instanceof DoubleImplication) {
