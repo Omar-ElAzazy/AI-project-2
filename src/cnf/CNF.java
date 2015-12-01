@@ -11,15 +11,15 @@ import unification.Variable;
 
 public class CNF {
 
-	public static Expression normalize(Expression E) throws IOException {
+	public static Expression clauseForm(Expression E) throws IOException {
 		E = eliminateDoubleImplication(E);
 		E = eliminateImplication(E);
 		E = pushNegationInwards(E);
 		E = Standardize(E);
 		E = Skolemize(E);
 		E = discardUniversalQuantifiers(E);
-		E = translateIntoCNF(E);
-		E = flatten(E);
+		//E = translateIntoCNF(E);
+		//E = flatten(E);
 		return E;
 	}
 
