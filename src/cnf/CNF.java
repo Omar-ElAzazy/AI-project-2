@@ -54,9 +54,67 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression Skolemize(Expression e) {
-		// TODO Auto-generated method stub
+	private static Expression applySkolemization(Expression e, ArrayList<Variable> scopeVariables, ArrayList<String> constantNames, HashMap<String, Function> mapping) throws IOException{
+		if(e instanceof And){
+			for(Expression sub_e : e.myExpression){
+				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+			}
+			return e;
+		}
+		else if(e instanceof DoubleImplication){
+			for(Expression sub_e : e.myExpression){
+				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+			}
+			return e;
+		}
+		else if(e instanceof ExistentialQuantifier){
+			String variableName = ((ExistentialQuantifier)e).variable.name;
+			Function func = new Function(new Constant(getNewConstantName(constantNames) + variableName), scopeVariables.toArray());
+			mapping.put(variableName, func);
+			for(Expression sub_e : e.myExpression){
+				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+			}
+			return e;
+		}
+		else if(e instanceof Implication){
+			for(Expression sub_e : e.myExpression){
+				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+			}
+			return e;
+		}
+		else if(e instanceof Or){
+			for(Expression sub_e : e.myExpression){
+				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+			}
+			return e;
+		}
+		else if(e instanceof UniversalQuantifier){
+			ArrayList<Variable> newScope = new ArrayList<Variable>();
+			newScope.add(((UniversalQuantifier)e).variable);
+			newScope.addAll(scopeVariables);
+			for(Expression sub_e : e.myExpression){
+				applySkolemization(sub_e, newScope, constantNames, mapping);
+			}
+			return e;
+		}
+		else if(e instanceof Constant){
+			//TODO
+		}
+		else if(e instanceof Function){
+			for(Expression sub_e : e.myExpression){
+				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+			}
+			return e;
+		}
+		else if(e instanceof Variable){
+			
+		}
 		return null;
+	}
+	
+	private static Expression Skolemize(Expression e) throws IOException {
+		ArrayList<String> constantNames = getAllConstantNames(e);
+		return applySkolemization(e, new ArrayList<Variable>(), constantNames, new HashMap<String, Function>());
 	}
 
 	private static String getNewVariableName(ArrayList<String> variableNames){
@@ -66,6 +124,75 @@ public class CNF {
 		}
 		variableNames.add("v" + id);
 		return "v" + id;
+	}
+	
+	private static String getNewConstantName(ArrayList<String> constantNames){
+		int id = 0;
+		while(constantNames.contains("f" + id)){
+			id ++;
+		}
+		constantNames.add("f" + id);
+		return "f" + id;
+	}
+	
+	private static ArrayList<String> getAllConstantNames(Expression e){
+		if(e instanceof And){
+			ArrayList<String> cons = new ArrayList<String>();
+			for(Expression sub_e : e.myExpression){
+				cons.addAll(getAllConstantNames(sub_e));
+			}
+			return cons;
+		}
+		else if(e instanceof DoubleImplication){
+			ArrayList<String> cons = new ArrayList<String>();
+			for(Expression sub_e : e.myExpression){
+				cons.addAll(getAllConstantNames(sub_e));
+			}
+			return cons;
+		}
+		else if(e instanceof ExistentialQuantifier){
+			ArrayList<String> cons = new ArrayList<String>();
+			for(Expression sub_e : e.myExpression){
+				cons.addAll(getAllConstantNames(sub_e));
+			}
+			return cons;
+		}
+		else if(e instanceof Implication){
+			ArrayList<String> cons = new ArrayList<String>();
+			for(Expression sub_e : e.myExpression){
+				cons.addAll(getAllConstantNames(sub_e));
+			}
+			return cons;
+		}
+		else if(e instanceof Or){
+			ArrayList<String> cons = new ArrayList<String>();
+			for(Expression sub_e : e.myExpression){
+				cons.addAll(getAllConstantNames(sub_e));
+			}
+			return cons;
+		}
+		else if(e instanceof UniversalQuantifier){
+			ArrayList<String> cons = new ArrayList<String>();
+			for(Expression sub_e : e.myExpression){
+				cons.addAll(getAllConstantNames(sub_e));
+			}
+			return cons;
+		}
+		else if(e instanceof Constant){
+			ArrayList<String> cons = new ArrayList<String>();
+			cons.add(((Constant)e).name);
+			return cons;
+		}
+		else if(e instanceof Function){
+			ArrayList<String> cons = new ArrayList<String>();
+			for(Expression sub_e : e.myExpression){
+				cons.addAll(getAllConstantNames(sub_e));
+			}
+			return cons;
+		}
+		else if(e instanceof Variable){
+		}
+		return null;
 	}
 	
 	private static ArrayList<String> getAllVariableNames(Expression e){
