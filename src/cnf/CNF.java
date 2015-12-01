@@ -14,7 +14,7 @@ public class CNF {
 	public static Expression clauseForm(Expression E) throws IOException {
 		E = eliminateDoubleImplication(E);
 		E = eliminateImplication(E);
-		E = pushNegationInwards(E);
+		E = pushNegationInwards(E, false);
 		E = Standardize(E);
 		E = Skolemize(E);
 		E = discardUniversalQuantifiers(E);
@@ -390,26 +390,51 @@ public class CNF {
 		return applyStandardization(e, mapping, variableNames);
 	}
 
-	public static Expression pushNegationInwards(Expression e)
+	public static Expression pushNegationInwards(Expression e, boolean neg)
 			throws IOException {
 		if (e instanceof Variable || e instanceof Constant
 				|| e instanceof Function) {
-			e.myExpression.get(0).negated = !e.myExpression.get(0).negated;
+			if (neg == true) {
+				e.myExpression.get(0).negated = !e.myExpression.get(0).negated;
+			}
 			return e;
 		} else if (e instanceof And) {
-			return new Or(pushNegationInwards(e.myExpression.get(0)),
-					pushNegationInwards(e.myExpression.get(1)));
+			if (neg != e.negated) {
+				return new Or(pushNegationInwards(e.myExpression.get(0), true),
+						pushNegationInwards(e.myExpression.get(1), true));
+			} else {
+				return new And(pushNegationInwards(e.myExpression.get(0), false),
+						pushNegationInwards(e.myExpression.get(1), false));
+			}
 		} else if (e instanceof Or) {
-			return new And(pushNegationInwards(e.myExpression.get(0)),
-					pushNegationInwards(e.myExpression.get(1)));
+			if (neg != e.negated) {
+				return new And(pushNegationInwards(e.myExpression.get(0), true),
+						pushNegationInwards(e.myExpression.get(1), true));
+			} else {
+				return new Or(pushNegationInwards(e.myExpression.get(0), false),
+						pushNegationInwards(e.myExpression.get(1), false));
+			}
+			
 		} else if (e instanceof UniversalQuantifier) {
-			return new ExistentialQuantifier(
-					((UniversalQuantifier) e).variable,
-					pushNegationInwards(e.myExpression.get(0)));
+			if (neg != e.negated) {
+				return new ExistentialQuantifier(
+						((UniversalQuantifier) e).variable,
+						pushNegationInwards(e.myExpression.get(0), true));
+			} else {
+				return new UniversalQuantifier(
+						((UniversalQuantifier) e).variable,
+						pushNegationInwards(e.myExpression.get(0), false));
+			}
 		} else if (e instanceof ExistentialQuantifier) {
-			return new UniversalQuantifier(
-					((ExistentialQuantifier) e).variable,
-					pushNegationInwards(e.myExpression.get(0)));
+			if (neg != e.negated) {
+				return new UniversalQuantifier(
+						((ExistentialQuantifier) e).variable,
+						pushNegationInwards(e.myExpression.get(0), true));
+			} else {
+				return new ExistentialQuantifier(
+						((ExistentialQuantifier) e).variable,
+						pushNegationInwards(e.myExpression.get(0), false));
+			}
 		}
 		return null;
 	}
