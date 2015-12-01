@@ -3,6 +3,7 @@ package cnf;
 import java.io.IOException;
 
 import unification.Expression;
+import unification.Variable;
 
 public class CNF {
 
@@ -43,8 +44,23 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression pushNegationInwards(Expression e) {
-		// TODO Auto-generated method stub
+	private static Expression pushNegationInwards(Expression e) throws IOException {
+		if (e instanceof Variable) {
+			e.myExpression.get(0).isNegated = !e.myExpression.get(0).isNegated;
+			return e;
+		} else if (e instanceof And) {
+			return new Or(pushNegationInwards(e.myExpression.get(0)),
+					pushNegationInwards(e.myExpression.get(1)));
+		} else if (e instanceof Or) {
+			return new And(pushNegationInwards(e.myExpression.get(0)),
+					pushNegationInwards(e.myExpression.get(1)));
+		} else if (e instanceof UniversalQuantifier) {
+			return new ExistentialQuantifier(((UniversalQuantifier) e).variable,
+					pushNegationInwards(e.myExpression.get(0)));
+		} else if (e instanceof ExistentialQuantifier) {
+			return new UniversalQuantifier(((ExistentialQuantifier) e).variable,
+					pushNegationInwards(e.myExpression.get(0)));
+		}
 		return null;
 	}
 
