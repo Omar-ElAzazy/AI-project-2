@@ -1,8 +1,5 @@
 package cnf;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import unification.Expression;
 import unification.Variable;
 

@@ -1,6 +1,5 @@
 package unification;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public abstract class Expression implements Listifiable {
 	public ArrayList<Expression> myExpression;
