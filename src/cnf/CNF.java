@@ -12,14 +12,14 @@ import unification.Variable;
 public class CNF {
 
 	public static Expression clauseForm(Expression E, boolean trace) throws IOException {
-		if (trace == true) System.out.println(E.toString());
-		E = eliminateDoubleImplication(E); if (trace == true) System.out.println(E.toString());
-		E = eliminateImplication(E); if (trace == true) System.out.println(E.toString());
-		E = pushNegationInwards(E, false); if (trace == true) System.out.println(E.toString());
-		E = Standardize(E); if (trace == true) System.out.println(E.toString());
-		E = Skolemize(E); if (trace == true) System.out.println(E.toString());
-		E = discardUniversalQuantifiers(E); if (trace == true) System.out.println(E.toString());
-		E = translateIntoCNF(E); if (trace == true) System.out.println(E.toString());
+		if (trace == true) System.out.println("Tracing => " + E.toString());
+		E = eliminateDoubleImplication(E); if (trace == true) System.out.println("Tracing => " + E.toString());
+		E = eliminateImplication(E); if (trace == true) System.out.println("Tracing => " + E.toString());
+		E = pushNegationInwards(E, false); if (trace == true) System.out.println("Tracing => " + E.toString());
+		E = Standardize(E); if (trace == true) System.out.println("Tracing => " + E.toString());
+		E = Skolemize(E); if (trace == true) System.out.println("Tracing => " + E.toString());
+		E = discardUniversalQuantifiers(E); if (trace == true) System.out.println("Tracing => " + E.toString());
+		E = translateIntoCNF(E); if (trace == true) System.out.println("Tracing => " + E.toString());
 		return E;
 	}
 
