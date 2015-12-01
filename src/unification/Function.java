@@ -20,10 +20,7 @@ public class Function extends Expression {
 	public String toString() {
 		String res = "";
 		res += myExpression.get(0);
-		if(myExpression.size() == 1){
-			res = res + "()";
-		}
-		else{
+		if(myExpression.size() > 1){
 			res += "(";
 			for (int i = 1; i < myExpression.size(); i++) {
 				res += myExpression.get(i).toString();
