@@ -3,12 +3,10 @@ package cnf;
 import unification.Expression;
 
 public class CNF {
-	
-	
-	
+
 	public static Expression normalize(Expression E){
 		E = eliminateDoubleImplication(E);
-		E = eliminateDoubleImplication(E);
+		E = eliminateImplication(E);
 		E = pushNegationInwards(E);
 		E = Standardize(E);
 		E = Skolemize(E);
@@ -44,6 +42,11 @@ public class CNF {
 	}
 
 	private static Expression pushNegationInwards(Expression e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private static Expression eliminateImplication(Expression e) {
 		// TODO Auto-generated method stub
 		return null;
 	}
