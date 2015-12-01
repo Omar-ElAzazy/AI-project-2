@@ -28,7 +28,25 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression translateIntoCNF(Expression e) {
+	private static Expression cleanUp(Expression e) throws IOException {
+		if (e instanceof Variable || e instanceof Constant
+				|| e instanceof Function) {
+			return e;
+		} else if (e instanceof UniversalQuantifier
+				|| e instanceof ExistentialQuantifier) {
+			return cleanUp(e.myExpression.get(0));
+		} else if (e instanceof And) {
+			return new And(cleanUp(e.myExpression.get(0)),
+					cleanUp(e.myExpression.get(1)));
+		} else if (e instanceof Or) {
+			return new Or(cleanUp(e.myExpression.get(0)),
+					cleanUp(e.myExpression.get(1)));
+		}
+		return null;
+	}
+
+	private static Expression translateIntoCNF(Expression e) throws IOException {
+		e = cleanUp(e);
 		if (e instanceof Or) {
 
 		} else if (e instanceof And) {
@@ -56,121 +74,126 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression applySkolemization(Expression e, ArrayList<Variable> scopeVariables, ArrayList<String> constantNames, HashMap<String, Function> mapping) throws IOException{
-		if(e instanceof And){
-			for(Expression sub_e : e.myExpression){
-				if(sub_e instanceof Variable){
-					String variableName = ((Variable)sub_e).name;
-					if(mapping.containsKey(variableName)){
-						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+	private static Expression applySkolemization(Expression e,
+			ArrayList<Variable> scopeVariables,
+			ArrayList<String> constantNames, HashMap<String, Function> mapping)
+			throws IOException {
+		if (e instanceof And) {
+			for (Expression sub_e : e.myExpression) {
+				if (sub_e instanceof Variable) {
+					String variableName = ((Variable) sub_e).name;
+					if (mapping.containsKey(variableName)) {
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								mapping.get(variableName));
 					}
-				}
-				else{
-					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				} else {
+					applySkolemization(sub_e, scopeVariables, constantNames,
+							mapping);
 				}
 			}
 			return e;
-		}
-		else if(e instanceof DoubleImplication){
-			for(Expression sub_e : e.myExpression){
-				if(sub_e instanceof Variable){
-					String variableName = ((Variable)sub_e).name;
-					if(mapping.containsKey(variableName)){
-						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+		} else if (e instanceof DoubleImplication) {
+			for (Expression sub_e : e.myExpression) {
+				if (sub_e instanceof Variable) {
+					String variableName = ((Variable) sub_e).name;
+					if (mapping.containsKey(variableName)) {
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								mapping.get(variableName));
 					}
-				}
-				else{
-					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				} else {
+					applySkolemization(sub_e, scopeVariables, constantNames,
+							mapping);
 				}
 			}
 			return e;
-		}
-		else if(e instanceof ExistentialQuantifier){
-			String variableName = ((ExistentialQuantifier)e).variable.name;
-			Function func = new Function(new Constant(getNewConstantName(constantNames) + variableName), scopeVariables.toArray());
+		} else if (e instanceof ExistentialQuantifier) {
+			String variableName = ((ExistentialQuantifier) e).variable.name;
+			Function func = new Function(new Constant(
+					getNewConstantName(constantNames) + variableName),
+					scopeVariables.toArray());
 			mapping.put(variableName, func);
-			for(Expression sub_e : e.myExpression){
-				if(sub_e instanceof Variable){
-					String sub_variableName = ((Variable)sub_e).name;
-					if(mapping.containsKey(sub_variableName)){
-						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(sub_variableName));
+			for (Expression sub_e : e.myExpression) {
+				if (sub_e instanceof Variable) {
+					String sub_variableName = ((Variable) sub_e).name;
+					if (mapping.containsKey(sub_variableName)) {
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								mapping.get(sub_variableName));
 					}
-				}
-				else{
-					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				} else {
+					applySkolemization(sub_e, scopeVariables, constantNames,
+							mapping);
 				}
 			}
 			return e;
-		}
-		else if(e instanceof Implication){
-			for(Expression sub_e : e.myExpression){
-				if(sub_e instanceof Variable){
-					String variableName = ((Variable)sub_e).name;
-					if(mapping.containsKey(variableName)){
-						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+		} else if (e instanceof Implication) {
+			for (Expression sub_e : e.myExpression) {
+				if (sub_e instanceof Variable) {
+					String variableName = ((Variable) sub_e).name;
+					if (mapping.containsKey(variableName)) {
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								mapping.get(variableName));
 					}
-				}
-				else{
-					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				} else {
+					applySkolemization(sub_e, scopeVariables, constantNames,
+							mapping);
 				}
 			}
 			return e;
-		}
-		else if(e instanceof Or){
-			for(Expression sub_e : e.myExpression){
-				if(sub_e instanceof Variable){
-					String variableName = ((Variable)sub_e).name;
-					if(mapping.containsKey(variableName)){
-						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+		} else if (e instanceof Or) {
+			for (Expression sub_e : e.myExpression) {
+				if (sub_e instanceof Variable) {
+					String variableName = ((Variable) sub_e).name;
+					if (mapping.containsKey(variableName)) {
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								mapping.get(variableName));
 					}
-				}
-				else{
-					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				} else {
+					applySkolemization(sub_e, scopeVariables, constantNames,
+							mapping);
 				}
 			}
 			return e;
-		}
-		else if(e instanceof UniversalQuantifier){
+		} else if (e instanceof UniversalQuantifier) {
 			ArrayList<Variable> newScope = new ArrayList<Variable>();
-			newScope.add(((UniversalQuantifier)e).variable);
+			newScope.add(((UniversalQuantifier) e).variable);
 			newScope.addAll(scopeVariables);
-			for(Expression sub_e : e.myExpression){
-				if(sub_e instanceof Variable){
-					String variableName = ((Variable)sub_e).name;
-					if(mapping.containsKey(variableName)){
-						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+			for (Expression sub_e : e.myExpression) {
+				if (sub_e instanceof Variable) {
+					String variableName = ((Variable) sub_e).name;
+					if (mapping.containsKey(variableName)) {
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								mapping.get(variableName));
 					}
-				}
-				else{
-					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				} else {
+					applySkolemization(sub_e, scopeVariables, constantNames,
+							mapping);
 				}
 			}
 			return e;
-		}
-		else if(e instanceof Constant){
-		}
-		else if(e instanceof Function){
-			for(Expression sub_e : e.myExpression){
-				if(sub_e instanceof Variable){
-					String variableName = ((Variable)sub_e).name;
-					if(mapping.containsKey(variableName)){
-						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+		} else if (e instanceof Constant) {
+		} else if (e instanceof Function) {
+			for (Expression sub_e : e.myExpression) {
+				if (sub_e instanceof Variable) {
+					String variableName = ((Variable) sub_e).name;
+					if (mapping.containsKey(variableName)) {
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								mapping.get(variableName));
 					}
-				}
-				else{
-					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				} else {
+					applySkolemization(sub_e, scopeVariables, constantNames,
+							mapping);
 				}
 			}
 			return e;
-		}
-		else if(e instanceof Variable){
+		} else if (e instanceof Variable) {
 		}
 		return null;
 	}
-	
+
 	private static Expression Skolemize(Expression e) throws IOException {
-		ArrayList<String> constantNames = getAllConstantNames(e);	
-		Expression result = applySkolemization(e, new ArrayList<Variable>(), constantNames, new HashMap<String, Function>());
+		ArrayList<String> constantNames = getAllConstantNames(e);
+		Expression result = applySkolemization(e, new ArrayList<Variable>(),
+				constantNames, new HashMap<String, Function>());
 		ExistentialQuantifier.removed = true;
 		return result;
 	}
@@ -183,76 +206,68 @@ public class CNF {
 		variableNames.add("v" + id);
 		return "v" + id;
 	}
-	
-	private static String getNewConstantName(ArrayList<String> constantNames){
+
+	private static String getNewConstantName(ArrayList<String> constantNames) {
 		int id = 0;
-		while(constantNames.contains("f" + id)){
-			id ++;
+		while (constantNames.contains("f" + id)) {
+			id++;
 		}
 		constantNames.add("f" + id);
 		return "f" + id;
 	}
-	
-	private static ArrayList<String> getAllConstantNames(Expression e){
-		if(e instanceof And){
+
+	private static ArrayList<String> getAllConstantNames(Expression e) {
+		if (e instanceof And) {
 			ArrayList<String> cons = new ArrayList<String>();
-			for(Expression sub_e : e.myExpression){
+			for (Expression sub_e : e.myExpression) {
 				cons.addAll(getAllConstantNames(sub_e));
 			}
 			return cons;
-		}
-		else if(e instanceof DoubleImplication){
+		} else if (e instanceof DoubleImplication) {
 			ArrayList<String> cons = new ArrayList<String>();
-			for(Expression sub_e : e.myExpression){
+			for (Expression sub_e : e.myExpression) {
 				cons.addAll(getAllConstantNames(sub_e));
 			}
 			return cons;
-		}
-		else if(e instanceof ExistentialQuantifier){
+		} else if (e instanceof ExistentialQuantifier) {
 			ArrayList<String> cons = new ArrayList<String>();
-			for(Expression sub_e : e.myExpression){
+			for (Expression sub_e : e.myExpression) {
 				cons.addAll(getAllConstantNames(sub_e));
 			}
 			return cons;
-		}
-		else if(e instanceof Implication){
+		} else if (e instanceof Implication) {
 			ArrayList<String> cons = new ArrayList<String>();
-			for(Expression sub_e : e.myExpression){
+			for (Expression sub_e : e.myExpression) {
 				cons.addAll(getAllConstantNames(sub_e));
 			}
 			return cons;
-		}
-		else if(e instanceof Or){
+		} else if (e instanceof Or) {
 			ArrayList<String> cons = new ArrayList<String>();
-			for(Expression sub_e : e.myExpression){
+			for (Expression sub_e : e.myExpression) {
 				cons.addAll(getAllConstantNames(sub_e));
 			}
 			return cons;
-		}
-		else if(e instanceof UniversalQuantifier){
+		} else if (e instanceof UniversalQuantifier) {
 			ArrayList<String> cons = new ArrayList<String>();
-			for(Expression sub_e : e.myExpression){
+			for (Expression sub_e : e.myExpression) {
 				cons.addAll(getAllConstantNames(sub_e));
 			}
 			return cons;
-		}
-		else if(e instanceof Constant){
+		} else if (e instanceof Constant) {
 			ArrayList<String> cons = new ArrayList<String>();
-			cons.add(((Constant)e).name);
+			cons.add(((Constant) e).name);
 			return cons;
-		}
-		else if(e instanceof Function){
+		} else if (e instanceof Function) {
 			ArrayList<String> cons = new ArrayList<String>();
-			for(Expression sub_e : e.myExpression){
+			for (Expression sub_e : e.myExpression) {
 				cons.addAll(getAllConstantNames(sub_e));
 			}
 			return cons;
-		}
-		else if(e instanceof Variable){
+		} else if (e instanceof Variable) {
 		}
 		return null;
 	}
-	
+
 	private static ArrayList<String> getAllVariableNames(Expression e) {
 		if (e instanceof And || e instanceof DoubleImplication
 				|| e instanceof Implication || e instanceof Or
