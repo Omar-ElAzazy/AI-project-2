@@ -4,16 +4,16 @@ import java.util.HashMap;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-		Variable x = new Variable('x');
-		Constant P = new Constant('P');
-		Constant A = new Constant('A');
-		Constant G = new Constant('G');
-		Constant H = new Constant('H');
-		Constant F = new Constant('F');
-		Variable u = new Variable('u');
-		Variable v = new Variable('v');
-		Variable y = new Variable('y');
-		Variable z = new Variable('z');
+		Variable x = new Variable("x");
+		Constant P = new Constant("P");
+		Constant A = new Constant("A");
+		Constant G = new Constant("G");
+		Constant H = new Constant("H");
+		Constant F = new Constant("F");
+		Variable u = new Variable("u");
+		Variable v = new Variable("v");
+		Variable y = new Variable("y");
+		Variable z = new Variable("z");
 
 		Function left1 = new Function(P, x, new Function(G, x), new Function(G,
 				new Function(F, A)));
