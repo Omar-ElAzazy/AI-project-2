@@ -19,7 +19,7 @@ public class ExistentialQuantifier extends Expression {
 			res = super.myExpression.get(0).toString();
 		}
 		else {
-			res = "EXISTS" + variable.toString() + "(" + super.myExpression.get(0).toString() + ")";
+			res = "∃" + variable.toString() + "(" + super.myExpression.get(0).toString() + ")";
 		}
 		if (negated == true) {
 			res = "!(" + res + ")";

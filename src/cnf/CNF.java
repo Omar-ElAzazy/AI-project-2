@@ -41,7 +41,9 @@ public class CNF {
 
 	private static Expression applyTranslation(Expression e) throws IOException{
 		for(int q = 0; q < e.myExpression.size(); q++){
-			e.myExpression.set(q, applyTranslation(e.myExpression.get(q)));
+			if(!(e.myExpression.get(q) instanceof Constant || e.myExpression.get(q) instanceof Variable)){
+				e.myExpression.set(q, applyTranslation(e.myExpression.get(q)));
+			}
 		}
 		if(e instanceof Or){
 			int indOfAnd = -1;
