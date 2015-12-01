@@ -1,10 +1,12 @@
 package cnf;
 
+import java.io.IOException;
+
 import unification.Expression;
 
 public class CNF {
 
-	public static Expression normalize(Expression E){
+	public static Expression normalize(Expression E) throws IOException {
 		E = eliminateDoubleImplication(E);
 		E = eliminateImplication(E);
 		E = pushNegationInwards(E);
@@ -46,13 +48,13 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression eliminateImplication(Expression e) {
-		// TODO Auto-generated method stub
-		return null;
+	private static Expression eliminateImplication(Expression e) throws IOException {
+		e.myExpression.get(0).isNegated = true;
+		return new Or(e.myExpression.get(0), e.myExpression.get(1));
 	}
 
-	private static Expression eliminateDoubleImplication(Expression e) {
-		// TODO Auto-generated method stub
-		return null;
+	private static Expression eliminateDoubleImplication(Expression e) throws IOException {
+		return new And(new Implication(e.myExpression.get(0), e.myExpression.get(1)),
+				new Implication(e.myExpression.get(1), e.myExpression.get(0)));
 	}
 }
