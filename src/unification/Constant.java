@@ -2,7 +2,7 @@ package unification;
 import java.io.IOException;
 
 public class Constant extends Expression {
-	String name;
+	public String name;
 
 	public Constant(String name) throws IOException {
 		super();

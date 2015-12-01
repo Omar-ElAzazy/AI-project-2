@@ -2,7 +2,7 @@ package unification;
 import java.io.IOException;
 
 public class Variable extends Expression {
-	String name;
+	public String name;
 
 	public Variable(String name) throws IOException {
 		this.name = name;
