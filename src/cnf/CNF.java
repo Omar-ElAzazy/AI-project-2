@@ -191,6 +191,7 @@ public class CNF {
 			}
 			return e;
 		} else if (e instanceof Constant) {
+			return e;
 		} else if (e instanceof Function) {
 			for (Expression sub_e : e.myExpression) {
 				if (sub_e instanceof Variable) {
@@ -206,6 +207,7 @@ public class CNF {
 			}
 			return e;
 		} else if (e instanceof Variable) {
+			return e;
 		}
 		return null;
 	}
@@ -350,8 +352,12 @@ public class CNF {
 			}
 			return e;
 		} else if (e instanceof ExistentialQuantifier) {
+			String newName = getNewVariableName(variableNames);
+			HashMap<String, String> newmapping = new HashMap<String, String>(mapping);
+			newmapping.put(((ExistentialQuantifier) e).variable.name, newName);
+			((ExistentialQuantifier) e).variable.name = newName;
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, mapping, variableNames);
+				applyStandardization(sub_e, newmapping, variableNames);
 			}
 			return e;
 		} else if (e instanceof Implication) {
@@ -366,14 +372,15 @@ public class CNF {
 			return e;
 		} else if (e instanceof UniversalQuantifier) {
 			String newName = getNewVariableName(variableNames);
-			mapping.put(((UniversalQuantifier) e).variable.name, newName);
+			HashMap<String, String> newmapping = new HashMap<String, String>(mapping);
+			newmapping.put(((UniversalQuantifier) e).variable.name, newName);
 			((UniversalQuantifier) e).variable.name = newName;
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, mapping, variableNames);
+				applyStandardization(sub_e, newmapping, variableNames);
 			}
 			return e;
 		} else if (e instanceof Constant) {
-
+			return e;
 		} else if (e instanceof Function) {
 			for (Expression sub_e : e.myExpression) {
 				applyStandardization(sub_e, mapping, variableNames);
