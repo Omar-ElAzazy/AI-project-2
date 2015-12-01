@@ -59,13 +59,29 @@ public class CNF {
 	private static Expression applySkolemization(Expression e, ArrayList<Variable> scopeVariables, ArrayList<String> constantNames, HashMap<String, Function> mapping) throws IOException{
 		if(e instanceof And){
 			for(Expression sub_e : e.myExpression){
-				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				if(sub_e instanceof Variable){
+					String variableName = ((Variable)sub_e).name;
+					if(mapping.containsKey(variableName)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+					}
+				}
+				else{
+					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				}
 			}
 			return e;
 		}
 		else if(e instanceof DoubleImplication){
 			for(Expression sub_e : e.myExpression){
-				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				if(sub_e instanceof Variable){
+					String variableName = ((Variable)sub_e).name;
+					if(mapping.containsKey(variableName)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+					}
+				}
+				else{
+					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				}
 			}
 			return e;
 		}
@@ -74,19 +90,43 @@ public class CNF {
 			Function func = new Function(new Constant(getNewConstantName(constantNames) + variableName), scopeVariables.toArray());
 			mapping.put(variableName, func);
 			for(Expression sub_e : e.myExpression){
-				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				if(sub_e instanceof Variable){
+					String sub_variableName = ((Variable)sub_e).name;
+					if(mapping.containsKey(sub_variableName)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(sub_variableName));
+					}
+				}
+				else{
+					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				}
 			}
 			return e;
 		}
 		else if(e instanceof Implication){
 			for(Expression sub_e : e.myExpression){
-				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				if(sub_e instanceof Variable){
+					String variableName = ((Variable)sub_e).name;
+					if(mapping.containsKey(variableName)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+					}
+				}
+				else{
+					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				}
 			}
 			return e;
 		}
 		else if(e instanceof Or){
 			for(Expression sub_e : e.myExpression){
-				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				if(sub_e instanceof Variable){
+					String variableName = ((Variable)sub_e).name;
+					if(mapping.containsKey(variableName)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+					}
+				}
+				else{
+					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				}
 			}
 			return e;
 		}
@@ -95,28 +135,44 @@ public class CNF {
 			newScope.add(((UniversalQuantifier)e).variable);
 			newScope.addAll(scopeVariables);
 			for(Expression sub_e : e.myExpression){
-				applySkolemization(sub_e, newScope, constantNames, mapping);
+				if(sub_e instanceof Variable){
+					String variableName = ((Variable)sub_e).name;
+					if(mapping.containsKey(variableName)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+					}
+				}
+				else{
+					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				}
 			}
 			return e;
 		}
 		else if(e instanceof Constant){
-			//TODO
 		}
 		else if(e instanceof Function){
 			for(Expression sub_e : e.myExpression){
-				applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				if(sub_e instanceof Variable){
+					String variableName = ((Variable)sub_e).name;
+					if(mapping.containsKey(variableName)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e), mapping.get(variableName));
+					}
+				}
+				else{
+					applySkolemization(sub_e, scopeVariables, constantNames, mapping);
+				}
 			}
 			return e;
 		}
 		else if(e instanceof Variable){
-			
 		}
 		return null;
 	}
 	
 	private static Expression Skolemize(Expression e) throws IOException {
-		ArrayList<String> constantNames = getAllConstantNames(e);
-		return applySkolemization(e, new ArrayList<Variable>(), constantNames, new HashMap<String, Function>());
+		ArrayList<String> constantNames = getAllConstantNames(e);	
+		Expression result = applySkolemization(e, new ArrayList<Variable>(), constantNames, new HashMap<String, Function>());
+		ExistentialQuantifier.removed = true;
+		return result;
 	}
 
 	private static String getNewVariableName(ArrayList<String> variableNames) {

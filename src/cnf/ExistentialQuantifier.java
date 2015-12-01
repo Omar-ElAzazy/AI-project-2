@@ -5,6 +5,7 @@ import unification.Variable;
 
 public class ExistentialQuantifier extends Expression {
 	Variable variable;
+	public static boolean removed = false;
 	
 	public ExistentialQuantifier(Variable variable, Expression expression){
 		super();
