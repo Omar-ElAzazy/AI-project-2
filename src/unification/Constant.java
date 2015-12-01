@@ -12,6 +12,10 @@ public class Constant extends Expression {
 
 	@Override
 	public String toString() {
-		return name;
+		String res = name;
+		if (negated == true) {
+			res = "!" + res;
+		}
+		return res;
 	}
 }

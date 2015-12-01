@@ -14,6 +14,10 @@ public class DoubleImplication extends Expression {
 
 	@Override
 	public String toString() {
-		return super.myExpression.get(0).toString() + "<=>" + super.myExpression.get(1).toString();
+		String res = "(" + super.myExpression.get(0).toString() + ") <=> (" + super.myExpression.get(1).toString() + ")";
+		if (negated == true) {
+			res = "!" + res;
+		}
+		return res;
 	}
 }

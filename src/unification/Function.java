@@ -18,12 +18,17 @@ public class Function extends Expression {
 
 	@Override
 	public String toString() {
-		String res = "(";
-		for (int i = 0; i < myExpression.size(); i++) {
+		String res = "";
+		res += myExpression.get(0);
+		res += "(";
+		for (int i = 1; i < myExpression.size(); i++) {
 			res += myExpression.get(i).toString();
 			res += ",";
 		}
 		res = res.substring(0, res.length() - 1) + ")";
+		if (negated == true) {
+			res = "!" + res;
+		}
 		return res;
 	}
 }
