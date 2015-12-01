@@ -14,6 +14,6 @@ public class ExistentialQuantifier extends Expression {
 	}
 	
 	public String toString(){
-		return "there_exists" + variable.toString() + " " + super.myExpression.get(0).toString();
+		return "(there_exists" + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
 	}
 }

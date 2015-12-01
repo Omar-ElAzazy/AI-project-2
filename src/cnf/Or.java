@@ -13,6 +13,6 @@ public class Or extends Expression{
 
 	@Override
 	public String toString() {
-		return super.myExpression.get(0).toString() + "v" + super.myExpression.get(1).toString();
+		return "(" + super.myExpression.get(0).toString() + "v" + super.myExpression.get(1).toString() + ")";
 	}
 }

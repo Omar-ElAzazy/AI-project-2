@@ -30,7 +30,7 @@ public class CNF {
 
 	private static Expression translateIntoCNF(Expression e) {
 		if (e instanceof Or) {
-
+			
 		} else if (e instanceof And) {
 
 		}
