@@ -173,7 +173,8 @@ public class CNF {
 	
 	private static Expression Standardize(Expression e) {
 		ArrayList<String> variableNames = getAllVariableNames(e);
-		return applyStandardization(e, mapping, variableNames)l
+		HashMap<String, String> mapping = new HashMap<String, String>();
+		return applyStandardization(e, mapping, variableNames);
 	}
 
 	private static Expression pushNegationInwards(Expression e) throws IOException {
