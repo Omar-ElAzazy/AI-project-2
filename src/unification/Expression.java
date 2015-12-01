@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 public abstract class Expression implements Listifiable {
 	public ArrayList<Expression> myExpression;
+	public boolean isNegated = false;
 
 	public Expression() {
 		myExpression = new ArrayList<Expression>();
