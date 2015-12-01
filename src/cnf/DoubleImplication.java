@@ -2,7 +2,6 @@ package cnf;
 
 import java.io.IOException;
 
-import unification.Constant;
 import unification.Expression;
 
 public class DoubleImplication extends Expression {

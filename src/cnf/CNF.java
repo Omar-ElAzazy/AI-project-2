@@ -31,7 +31,23 @@ public class CNF {
 	}
 
 	private static Expression discardUniversalQuantifiers(Expression e) {
-		// TODO Auto-generated method stub
+		if (e instanceof Variable || e instanceof Constant) {
+			return e;
+		}
+		else if (e instanceof UniversalQuantifier) {
+			((UniversalQuantifier) e).discarded = true;
+			discardUniversalQuantifiers(e.myExpression.get(0));
+			return e;
+		}
+		else if (e instanceof And || e instanceof Or) {
+			discardUniversalQuantifiers(e.myExpression.get(0));
+			discardUniversalQuantifiers(e.myExpression.get(1));
+			return e;
+		}
+		else if (e instanceof ExistentialQuantifier) {
+			discardUniversalQuantifiers(e.myExpression.get(0));
+			return e;
+		}
 		return null;
 	}
 
@@ -47,7 +63,7 @@ public class CNF {
 
 	private static Expression pushNegationInwards(Expression e) throws IOException {
 		if (e instanceof Variable || e instanceof Constant) {
-			e.myExpression.get(0).isNegated = !e.myExpression.get(0).isNegated;
+			e.myExpression.get(0).negated = !e.myExpression.get(0).negated;
 			return e;
 		} else if (e instanceof And) {
 			return new Or(pushNegationInwards(e.myExpression.get(0)),
@@ -70,7 +86,7 @@ public class CNF {
 			return e;
 		}
 		else if (e instanceof Implication) {
-			e.myExpression.get(0).isNegated = true;
+			e.myExpression.get(0).negated = true;
 			return new Or(e.myExpression.get(0), e.myExpression.get(1));
 		}
 		else if (e instanceof And) {
