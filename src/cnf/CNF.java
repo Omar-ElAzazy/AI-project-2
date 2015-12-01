@@ -1,6 +1,7 @@
 package cnf;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import unification.Expression;
 
@@ -38,8 +39,13 @@ public class CNF {
 		return null;
 	}
 
+	private static String getNewVariableName(ArrayList<String> variableNames){
+		return null;
+	}
+	
 	private static Expression Standardize(Expression e) {
-		// TODO Auto-generated method stub
+		// Get all variable names
+		ArrayList<String> variableNames = new ArrayList<String>();
 		return null;
 	}
 

@@ -2,19 +2,19 @@ package unification;
 import java.io.IOException;
 
 public class Constant extends Expression {
-	char c;
+	String name;
 
-	public Constant(char c) throws IOException {
+	public Constant(String name) throws IOException {
 		super();
-		if (c > 'Z' || c < 'A') {
+		this.name = name;
+		if (Character.isLowerCase(this.name.charAt(0))) {
 			throw new IOException("A constant must be uppercase");
 		}
-		this.c = c;
 		super.myExpression.add(this);
 	}
 
 	@Override
 	public String toString() {
-		return c + "";
+		return name;
 	}
 }
