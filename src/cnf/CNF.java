@@ -265,7 +265,7 @@ public class CNF {
 			return cons;
 		} else if (e instanceof Variable) {
 		}
-		return null;
+		return new ArrayList<String>();
 	}
 
 	private static ArrayList<String> getAllVariableNames(Expression e) {
@@ -292,7 +292,7 @@ public class CNF {
 			vars.add(((Variable) e).name);
 			return vars;
 		}
-		return null;
+		return new ArrayList<String>();
 	}
 
 	/*
