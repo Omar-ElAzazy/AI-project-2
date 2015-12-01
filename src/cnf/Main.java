@@ -17,6 +17,7 @@ public class Main {
 		Expression e2 = new And(new Function(new Constant("P"), new Variable("x")), e3);
 		Expression e1 = new ExistentialQuantifier(new Variable("x"), e2);
 
+		System.out.println(e1.toString());
 		System.out.println(CNF.clauseForm(e1, true).toString());
 	}
 }
