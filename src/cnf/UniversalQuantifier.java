@@ -18,7 +18,7 @@ public class UniversalQuantifier extends Expression{
 			return super.myExpression.get(0).toString();
 		}
 		else {
-			return "(for_all" + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
+			return "(∀ " + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
 		}
 	}
 }

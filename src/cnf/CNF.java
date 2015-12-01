@@ -15,6 +15,7 @@ public class CNF {
 		E = eliminateDoubleImplication(E);
 		E = eliminateImplication(E);
 		E = pushNegationInwards(E);
+		System.out.println(E);
 		E = Standardize(E);
 		E = Skolemize(E);
 		E = discardUniversalQuantifiers(E);

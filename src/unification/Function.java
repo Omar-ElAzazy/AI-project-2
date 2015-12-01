@@ -18,8 +18,8 @@ public class Function extends Expression {
 
 	@Override
 	public String toString() {
-		String res = "(";
-		for (int i = 0; i < myExpression.size(); i++) {
+		String res = myExpression.get(0).toString() + "(";
+		for (int i = 1; i < myExpression.size(); i++) {
 			res += myExpression.get(i).toString();
 			res += ",";
 		}
