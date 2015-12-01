@@ -1,5 +1,7 @@
 package unification;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Variable extends Expression {
 	public String name;
@@ -16,5 +18,4 @@ public class Variable extends Expression {
 	public String toString() {
 		return name;
 	}
-
 }

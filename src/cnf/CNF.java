@@ -2,6 +2,7 @@ package cnf;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import unification.Constant;
 import unification.Expression;
@@ -47,6 +48,7 @@ public class CNF {
 		while(variableNames.contains("v" + id)){
 			id ++;
 		}
+		variableNames.add("v" + id);
 		return "v" + id;
 	}
 	
@@ -82,10 +84,96 @@ public class CNF {
 		return null;
 	}
 	
+	/*
+	 * if(e instanceof And){
+			
+		}
+		else if(e instanceof DoubleImplication){
+			
+		}
+		else if(e instanceof ExistentialQuantifier){
+			
+		}
+		else if(e instanceof Implication){
+			
+		}
+		else if(e instanceof Or){
+			
+		}
+		else if(e instanceof UniversalQuantifier){
+			
+		}
+		else if(e instanceof Constant){
+			
+		}
+		else if(e instanceof Function){
+			
+		}
+		else if(e instanceof Variable){
+			
+		}
+	 */
+	
+	private static Expression applyStandardization(Expression e, HashMap<String, String> mapping, ArrayList<String> variableNames){
+		if(e instanceof And){
+			for(Expression sub_e : e.myExpression){
+				applyStandardization(sub_e, mapping, variableNames);
+			}
+			return e;
+		}
+		else if(e instanceof DoubleImplication){
+			for(Expression sub_e : e.myExpression){
+				applyStandardization(sub_e, mapping, variableNames);
+			}
+			return e;
+		}
+		else if(e instanceof ExistentialQuantifier){
+			for(Expression sub_e : e.myExpression){
+				applyStandardization(sub_e, mapping, variableNames);
+			}
+			return e;
+		}
+		else if(e instanceof Implication){
+			for(Expression sub_e : e.myExpression){
+				applyStandardization(sub_e, mapping, variableNames);
+			}
+			return e;
+		}
+		else if(e instanceof Or){
+			for(Expression sub_e : e.myExpression){
+				applyStandardization(sub_e, mapping, variableNames);
+			}
+			return e;
+		}
+		else if(e instanceof UniversalQuantifier){
+			String newName = getNewVariableName(variableNames);
+			mapping.put(((UniversalQuantifier) e).variable.name, newName);
+			((UniversalQuantifier) e).variable.name = newName;
+			for(Expression sub_e : e.myExpression){
+				applyStandardization(sub_e, mapping, variableNames);
+			}
+			return e;
+		}
+		else if(e instanceof Constant){
+			
+		}
+		else if(e instanceof Function){
+			for(Expression sub_e : e.myExpression){
+				applyStandardization(sub_e, mapping, variableNames);
+			}
+			return e;
+		}
+		else if(e instanceof Variable){
+			Variable var = (Variable)e;
+			var.name = mapping.get(var.name);
+			return e;
+		}
+		return null;
+	}
+	
 	private static Expression Standardize(Expression e) {
 		ArrayList<String> variableNames = getAllVariableNames(e);
-		
-		return null;
+		return applyStandardization(e, mapping, variableNames)l
 	}
 
 	private static Expression pushNegationInwards(Expression e) throws IOException {
