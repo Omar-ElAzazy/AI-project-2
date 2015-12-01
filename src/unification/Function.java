@@ -20,12 +20,17 @@ public class Function extends Expression {
 	public String toString() {
 		String res = "";
 		res += myExpression.get(0);
-		res += "(";
-		for (int i = 1; i < myExpression.size(); i++) {
-			res += myExpression.get(i).toString();
-			res += ",";
+		if(myExpression.size() == 1){
+			res = res + "()";
 		}
-		res = res.substring(0, res.length() - 1) + ")";
+		else{
+			res += "(";
+			for (int i = 1; i < myExpression.size(); i++) {
+				res += myExpression.get(i).toString();
+				res += ",";
+			}
+			res = res.substring(0, res.length() - 1) + ")";
+		}
 		if (negated == true) {
 			res = "!" + res;
 		}
