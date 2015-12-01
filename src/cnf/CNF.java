@@ -39,14 +39,37 @@ public class CNF {
 		return null;
 	}
 
-	public static Expression translateIntoCNF(Expression e) throws IOException {
-		e = cleanUp(e);
-		if (e instanceof Or) {
-
-		} else if (e instanceof And) {
-
+	private static Expression applyTranslation(Expression e) throws IOException{
+		for(int q = 0; q < e.myExpression.size(); q++){
+			e.myExpression.set(q, applyTranslation(e.myExpression.get(q)));
 		}
-		return null;
+		if(e instanceof Or){
+			int indOfAnd = -1;
+			if(e.myExpression.get(0) instanceof And){
+				indOfAnd = 0;
+			}
+			else if(e.myExpression.get(1) instanceof And){
+				indOfAnd = 1;
+			}
+			if(indOfAnd != -1){
+				Expression and = e.myExpression.get(indOfAnd);
+				Expression other = e.myExpression.get((indOfAnd + 1) % 2);
+				
+				Expression left = new Or(other, and.myExpression.get(0));
+				left = applyTranslation(left);
+				
+				Expression right = new Or(other, and.myExpression.get(1));
+				right = applyTranslation(right);
+				
+				return new And(left, right);
+			}
+		}
+		return e;
+	}
+	
+	private static Expression translateIntoCNF(Expression e) throws IOException {
+		e = cleanUp(e);
+		return applyTranslation(e);
 	}
 
 	public static Expression discardUniversalQuantifiers(Expression e) {
@@ -259,7 +282,7 @@ public class CNF {
 			return cons;
 		} else if (e instanceof Variable) {
 		}
-		return null;
+		return new ArrayList<String>();
 	}
 
 	public static ArrayList<String> getAllVariableNames(Expression e) {
@@ -286,7 +309,7 @@ public class CNF {
 			vars.add(((Variable) e).name);
 			return vars;
 		}
-		return null;
+		return new ArrayList<String>();
 	}
 
 	/*
