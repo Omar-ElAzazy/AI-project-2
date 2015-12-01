@@ -14,11 +14,16 @@ public class UniversalQuantifier extends Expression{
 	}
 	
 	public String toString(){
+		String res = "";
 		if (discarded == true) {
-			return super.myExpression.get(0).toString();
+			res = super.myExpression.get(0).toString();
 		}
 		else {
 			return "(∀ " + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
 		}
+		if (negated == true) {
+			res = "!(" + res + ")";
+		}
+		return res;
 	}
 }

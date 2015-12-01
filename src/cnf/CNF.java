@@ -19,17 +19,11 @@ public class CNF {
 		E = Standardize(E);
 		E = Skolemize(E);
 		E = discardUniversalQuantifiers(E);
-		//E = translateIntoCNF(E);
-		//E = flatten(E);
+		E = translateIntoCNF(E);
 		return E;
 	}
 
-	private static Expression flatten(Expression e) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private static Expression cleanUp(Expression e) throws IOException {
+	public static Expression cleanUp(Expression e) throws IOException {
 		if (e instanceof Variable || e instanceof Constant
 				|| e instanceof Function) {
 			return e;
@@ -48,7 +42,9 @@ public class CNF {
 
 	private static Expression applyTranslation(Expression e) throws IOException{
 		for(int q = 0; q < e.myExpression.size(); q++){
-			e.myExpression.set(q, applyTranslation(e.myExpression.get(q)));
+			if(!(e.myExpression.get(q) instanceof Constant || e.myExpression.get(q) instanceof Variable)){
+				e.myExpression.set(q, applyTranslation(e.myExpression.get(q)));
+			}
 		}
 		if(e instanceof Or){
 			int indOfAnd = -1;
@@ -79,7 +75,7 @@ public class CNF {
 		return applyTranslation(e);
 	}
 
-	private static Expression discardUniversalQuantifiers(Expression e) {
+	public static Expression discardUniversalQuantifiers(Expression e) {
 		if (e instanceof Variable || e instanceof Constant
 				|| e instanceof Function) {
 			return e;
@@ -98,7 +94,7 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression applySkolemization(Expression e,
+	public static Expression applySkolemization(Expression e,
 			ArrayList<Variable> scopeVariables,
 			ArrayList<String> constantNames, HashMap<String, Function> mapping)
 			throws IOException {
@@ -214,7 +210,7 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression Skolemize(Expression e) throws IOException {
+	public static Expression Skolemize(Expression e) throws IOException {
 		ArrayList<String> constantNames = getAllConstantNames(e);
 		Expression result = applySkolemization(e, new ArrayList<Variable>(),
 				constantNames, new HashMap<String, Function>());
@@ -222,7 +218,7 @@ public class CNF {
 		return result;
 	}
 
-	private static String getNewVariableName(ArrayList<String> variableNames) {
+	public static String getNewVariableName(ArrayList<String> variableNames) {
 		int id = 0;
 		while (variableNames.contains("v" + id)) {
 			id++;
@@ -231,7 +227,7 @@ public class CNF {
 		return "v" + id;
 	}
 
-	private static String getNewConstantName(ArrayList<String> constantNames) {
+	public static String getNewConstantName(ArrayList<String> constantNames) {
 		int id = 0;
 		while (constantNames.contains("f" + id)) {
 			id++;
@@ -240,7 +236,7 @@ public class CNF {
 		return "f" + id;
 	}
 
-	private static ArrayList<String> getAllConstantNames(Expression e) {
+	public static ArrayList<String> getAllConstantNames(Expression e) {
 		if (e instanceof And) {
 			ArrayList<String> cons = new ArrayList<String>();
 			for (Expression sub_e : e.myExpression) {
@@ -292,7 +288,7 @@ public class CNF {
 		return new ArrayList<String>();
 	}
 
-	private static ArrayList<String> getAllVariableNames(Expression e) {
+	public static ArrayList<String> getAllVariableNames(Expression e) {
 		if (e instanceof And || e instanceof DoubleImplication
 				|| e instanceof Implication || e instanceof Or
 				|| e instanceof Function) {
@@ -341,7 +337,7 @@ public class CNF {
 	 * }
 	 */
 
-	private static Expression applyStandardization(Expression e,
+	public static Expression applyStandardization(Expression e,
 			HashMap<String, String> mapping, ArrayList<String> variableNames) {
 		if (e instanceof And) {
 			for (Expression sub_e : e.myExpression) {
@@ -391,13 +387,13 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression Standardize(Expression e) {
+	public static Expression Standardize(Expression e) {
 		ArrayList<String> variableNames = getAllVariableNames(e);
 		HashMap<String, String> mapping = new HashMap<String, String>();
 		return applyStandardization(e, mapping, variableNames);
 	}
 
-	private static Expression pushNegationInwards(Expression e)
+	public static Expression pushNegationInwards(Expression e)
 			throws IOException {
 		if (e instanceof Variable || e instanceof Constant
 				|| e instanceof Function) {
@@ -421,7 +417,7 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression eliminateImplication(Expression e)
+	public static Expression eliminateImplication(Expression e)
 			throws IOException {
 		if (e instanceof Variable || e instanceof Constant
 				|| e instanceof Function) {
@@ -451,7 +447,7 @@ public class CNF {
 		return null;
 	}
 
-	private static Expression eliminateDoubleImplication(Expression e)
+	public static Expression eliminateDoubleImplication(Expression e)
 			throws IOException {
 		if (e instanceof Variable || e instanceof Constant
 				|| e instanceof Function) {

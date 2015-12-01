@@ -14,6 +14,16 @@ public class ExistentialQuantifier extends Expression {
 	}
 	
 	public String toString(){
-		return "(∃ " + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
+		String res = "";
+		if (removed == true) {
+			res = super.myExpression.get(0).toString();
+		}
+		else {
+			res = "∃" + variable.toString() + "(" + super.myExpression.get(0).toString() + ")";
+		}
+		if (negated == true) {
+			res = "!(" + res + ")";
+		}
+		return res;
 	}
 }
