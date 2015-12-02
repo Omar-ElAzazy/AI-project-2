@@ -20,4 +20,11 @@ public class Variable extends Expression {
 		}
 		return res;
 	}
+	
+	@Override
+	public Expression deepCopy() throws IOException{
+		Variable copy = new Variable(new String(name));
+		copy.negated = negated;
+		return copy;
+	}
 }

@@ -19,4 +19,11 @@ public class Implication extends Expression{
 		}
 		return res;
 	}
+	
+	@Override
+	public Expression deepCopy() throws IOException{
+		Implication copy = new Implication(myExpression.get(0).deepCopy(), myExpression.get(1).deepCopy());
+		copy.negated = negated;
+		return copy;
+	}
 }

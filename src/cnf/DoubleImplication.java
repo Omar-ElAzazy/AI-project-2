@@ -20,4 +20,11 @@ public class DoubleImplication extends Expression {
 		}
 		return res;
 	}
+	
+	@Override
+	public Expression deepCopy() throws IOException{
+		DoubleImplication copy = new DoubleImplication(myExpression.get(0).deepCopy(), myExpression.get(1).deepCopy());
+		copy.negated = negated;
+		return copy;
+	}
 }

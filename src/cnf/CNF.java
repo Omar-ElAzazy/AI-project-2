@@ -10,7 +10,9 @@ import unification.Function;
 import unification.Variable;
 
 public class CNF {
-
+	
+	public static boolean flattened = false;
+	
 	public static Expression clauseForm(Expression E, boolean trace) throws IOException {
 		E = eliminateDoubleImplication(E); if (trace == true) System.out.println("Tracing => " + E.toString());
 		E = eliminateImplication(E); if (trace == true) System.out.println("Tracing => " + E.toString());
@@ -19,6 +21,7 @@ public class CNF {
 		E = Skolemize(E); if (trace == true) System.out.println("Tracing => " + E.toString());
 		E = discardUniversalQuantifiers(E); if (trace == true) System.out.println("Tracing => " + E.toString());
 		E = translateIntoCNF(E); if (trace == true) System.out.println("Tracing => " + E.toString());
+		flattened = true;
 		return E;
 	}
 
@@ -110,7 +113,7 @@ public class CNF {
 							mapping);
 				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof DoubleImplication) {
 			for (Expression sub_e : e.myExpression) {
 				if (sub_e instanceof Variable) {
@@ -124,7 +127,7 @@ public class CNF {
 							mapping);
 				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof ExistentialQuantifier) {
 			String variableName = ((ExistentialQuantifier) e).variable.name;
 			Function func = new Function(new Constant(
@@ -143,7 +146,7 @@ public class CNF {
 							mapping);
 				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof Implication) {
 			for (Expression sub_e : e.myExpression) {
 				if (sub_e instanceof Variable) {
@@ -157,7 +160,7 @@ public class CNF {
 							mapping);
 				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof Or) {
 			for (Expression sub_e : e.myExpression) {
 				if (sub_e instanceof Variable) {
@@ -171,11 +174,10 @@ public class CNF {
 							mapping);
 				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof UniversalQuantifier) {
-			ArrayList<Variable> newScope = new ArrayList<Variable>();
-			newScope.add(((UniversalQuantifier) e).variable);
-			newScope.addAll(scopeVariables);
+			Variable var = ((UniversalQuantifier) e).variable;
+			scopeVariables.add(((UniversalQuantifier) e).variable);
 			for (Expression sub_e : e.myExpression) {
 				if (sub_e instanceof Variable) {
 					String variableName = ((Variable) sub_e).name;
@@ -188,9 +190,10 @@ public class CNF {
 							mapping);
 				}
 			}
-			return e;
+			scopeVariables.remove(var);
+			return e.deepCopy();
 		} else if (e instanceof Constant) {
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof Function) {
 			for (Expression sub_e : e.myExpression) {
 				if (sub_e instanceof Variable) {
@@ -204,9 +207,9 @@ public class CNF {
 							mapping);
 				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof Variable) {
-			return e;
+			return e.deepCopy();
 		}
 		return null;
 	}
@@ -339,61 +342,128 @@ public class CNF {
 	 */
 
 	public static Expression applyStandardization(Expression e,
-			HashMap<String, String> mapping, ArrayList<String> variableNames) {
+			HashMap<String, String> mapping, ArrayList<String> variableNames) throws IOException {
 		if (e instanceof And) {
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, mapping, variableNames);
+				if (sub_e instanceof Variable) {
+					Variable var = (Variable) sub_e;
+					if(mapping.containsKey(var.name)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								new Variable(mapping.get(var.name)));
+					}
+				}
+				else{
+					applyStandardization(sub_e, mapping, variableNames);
+				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof DoubleImplication) {
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, mapping, variableNames);
+				if (sub_e instanceof Variable) {
+					Variable var = (Variable) sub_e;
+					if(mapping.containsKey(var.name)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								new Variable(mapping.get(var.name)));
+					}
+				}
+				else{
+					applyStandardization(sub_e, mapping, variableNames);
+				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof ExistentialQuantifier) {
+			String oldName = ((ExistentialQuantifier) e).variable.name;
 			String newName = getNewVariableName(variableNames);
-			HashMap<String, String> newmapping = new HashMap<String, String>(mapping);
-			newmapping.put(((ExistentialQuantifier) e).variable.name, newName);
+			mapping.put(oldName, newName);
 			((ExistentialQuantifier) e).variable.name = newName;
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, newmapping, variableNames);
+				if (sub_e instanceof Variable) {
+					Variable var = (Variable) sub_e;
+					if(mapping.containsKey(var.name)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								new Variable(mapping.get(var.name)));
+					}
+				}
+				else{
+					applyStandardization(sub_e, mapping, variableNames);
+				}
 			}
-			return e;
+			mapping.remove(oldName);
+			return e.deepCopy();
 		} else if (e instanceof Implication) {
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, mapping, variableNames);
+				if (sub_e instanceof Variable) {
+					Variable var = (Variable) sub_e;
+					if(mapping.containsKey(var.name)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								new Variable(mapping.get(var.name)));
+					}
+				}
+				else{
+					applyStandardization(sub_e, mapping, variableNames);
+				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof Or) {
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, mapping, variableNames);
+				if (sub_e instanceof Variable) {
+					Variable var = (Variable) sub_e;
+					if(mapping.containsKey(var.name)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								new Variable(mapping.get(var.name)));
+					}
+				}
+				else{
+					applyStandardization(sub_e, mapping, variableNames);
+				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof UniversalQuantifier) {
+			String oldName = ((UniversalQuantifier) e).variable.name;
 			String newName = getNewVariableName(variableNames);
-			HashMap<String, String> newmapping = new HashMap<String, String>(mapping);
-			newmapping.put(((UniversalQuantifier) e).variable.name, newName);
+			mapping.put(oldName, newName);
 			((UniversalQuantifier) e).variable.name = newName;
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, newmapping, variableNames);
+				if (sub_e instanceof Variable) {
+					Variable var = (Variable) sub_e;
+					if(mapping.containsKey(var.name)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								new Variable(mapping.get(var.name)));
+					}
+				}
+				else{
+					applyStandardization(sub_e, mapping, variableNames);
+				}
 			}
-			return e;
+			mapping.remove(oldName);
+			return e.deepCopy();
 		} else if (e instanceof Constant) {
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof Function) {
 			for (Expression sub_e : e.myExpression) {
-				applyStandardization(sub_e, mapping, variableNames);
+				if (sub_e instanceof Variable) {
+					Variable var = (Variable) sub_e;
+					if(mapping.containsKey(var.name)){
+						e.myExpression.set(e.myExpression.indexOf(sub_e),
+								new Variable(mapping.get(var.name)));
+					}
+				}
+				else{
+					applyStandardization(sub_e, mapping, variableNames);
+				}
 			}
-			return e;
+			return e.deepCopy();
 		} else if (e instanceof Variable) {
 			Variable var = (Variable) e;
-			var.name = mapping.get(var.name);
-			return e;
+			if(mapping.containsKey(var.name)){
+				var.name = mapping.get(var.name);
+			}
+			return e.deepCopy();
 		}
 		return null;
 	}
 
-	public static Expression Standardize(Expression e) {
+	public static Expression Standardize(Expression e) throws IOException {
 		ArrayList<String> variableNames = getAllVariableNames(e);
 		HashMap<String, String> mapping = new HashMap<String, String>();
 		return applyStandardization(e, mapping, variableNames);
@@ -401,48 +471,52 @@ public class CNF {
 
 	public static Expression pushNegationInwards(Expression e, boolean neg)
 			throws IOException {
+		if(e.negated){
+			neg = !neg;
+		}
+		e.negated = neg;
 		if (e instanceof Variable || e instanceof Constant
 				|| e instanceof Function) {
-			if (neg == true) {
-				e.myExpression.get(0).negated = !e.myExpression.get(0).negated;
+			if (neg) {
+				e.myExpression.get(0).negated = neg;
 			}
 			return e;
 		} else if (e instanceof And) {
-			if (neg != e.negated) {
-				return new Or(pushNegationInwards(e.myExpression.get(0), true),
-						pushNegationInwards(e.myExpression.get(1), true));
+			if (neg) {
+				return new Or(pushNegationInwards(e.myExpression.get(0), true).deepCopy(),
+						pushNegationInwards(e.myExpression.get(1), true).deepCopy());
 			} else {
-				return new And(pushNegationInwards(e.myExpression.get(0), false),
-						pushNegationInwards(e.myExpression.get(1), false));
+				return new And(pushNegationInwards(e.myExpression.get(0), false).deepCopy(),
+						pushNegationInwards(e.myExpression.get(1), false).deepCopy());
 			}
 		} else if (e instanceof Or) {
-			if (neg != e.negated) {
-				return new And(pushNegationInwards(e.myExpression.get(0), true),
-						pushNegationInwards(e.myExpression.get(1), true));
+			if (neg) {
+				return new And(pushNegationInwards(e.myExpression.get(0), true).deepCopy(),
+						pushNegationInwards(e.myExpression.get(1), true).deepCopy());
 			} else {
-				return new Or(pushNegationInwards(e.myExpression.get(0), false),
-						pushNegationInwards(e.myExpression.get(1), false));
+				return new Or(pushNegationInwards(e.myExpression.get(0), false).deepCopy(),
+						pushNegationInwards(e.myExpression.get(1), false).deepCopy());
 			}
 			
 		} else if (e instanceof UniversalQuantifier) {
-			if (neg != e.negated) {
+			if (neg) {
 				return new ExistentialQuantifier(
-						((UniversalQuantifier) e).variable,
-						pushNegationInwards(e.myExpression.get(0), true));
+						(Variable)((UniversalQuantifier) e).variable.deepCopy(),
+						pushNegationInwards(e.myExpression.get(0), true).deepCopy());
 			} else {
 				return new UniversalQuantifier(
-						((UniversalQuantifier) e).variable,
-						pushNegationInwards(e.myExpression.get(0), false));
+						(Variable)((UniversalQuantifier) e).variable.deepCopy(),
+						pushNegationInwards(e.myExpression.get(0), false).deepCopy());
 			}
 		} else if (e instanceof ExistentialQuantifier) {
-			if (neg != e.negated) {
+			if (neg) {
 				return new UniversalQuantifier(
-						((ExistentialQuantifier) e).variable,
-						pushNegationInwards(e.myExpression.get(0), true));
+						(Variable)((ExistentialQuantifier) e).variable.deepCopy(),
+						pushNegationInwards(e.myExpression.get(0), true).deepCopy());
 			} else {
 				return new ExistentialQuantifier(
-						((ExistentialQuantifier) e).variable,
-						pushNegationInwards(e.myExpression.get(0), false));
+						(Variable)((ExistentialQuantifier) e).variable.deepCopy(),
+						pushNegationInwards(e.myExpression.get(0), false).deepCopy());
 			}
 		}
 		return null;
@@ -454,26 +528,26 @@ public class CNF {
 				|| e instanceof Function) {
 			return e;
 		} else if (e instanceof Implication) {
-			e.myExpression.get(0).negated = true;
-			return new Or(e.myExpression.get(0), e.myExpression.get(1));
+			e.myExpression.get(0).negated = !e.myExpression.get(0).negated;
+			return new Or(e.myExpression.get(0).deepCopy(), e.myExpression.get(1).deepCopy());
 		} else if (e instanceof And) {
 			Expression newLeft = eliminateImplication(e.myExpression.get(0));
 			Expression newRight = eliminateImplication(e.myExpression.get(1));
-			return new And(newLeft, newRight);
+			return new And(newLeft.deepCopy(), newRight.deepCopy());
 		} else if (e instanceof Or) {
 			Expression newLeft = eliminateImplication(e.myExpression.get(0));
 			Expression newRight = eliminateImplication(e.myExpression.get(1));
-			return new Or(newLeft, newRight);
+			return new Or(newLeft.deepCopy(), newRight.deepCopy());
 		} else if (e instanceof UniversalQuantifier) {
 			Expression newExpression = eliminateImplication(e.myExpression
 					.get(0));
-			return new UniversalQuantifier(((UniversalQuantifier) e).variable,
-					newExpression);
+			return new UniversalQuantifier((Variable)((UniversalQuantifier) e).variable.deepCopy(),
+					newExpression.deepCopy());
 		} else if (e instanceof ExistentialQuantifier) {
 			Expression newExpression = eliminateImplication(e.myExpression
 					.get(0));
 			return new ExistentialQuantifier(
-					((ExistentialQuantifier) e).variable, newExpression);
+					(Variable)((ExistentialQuantifier) e).variable.deepCopy(), newExpression.deepCopy());
 		}
 		return null;
 	}
@@ -488,36 +562,36 @@ public class CNF {
 					eliminateDoubleImplication(e.myExpression.get(0)),
 					eliminateDoubleImplication(e.myExpression.get(1))),
 					new Implication(eliminateDoubleImplication(e.myExpression
-							.get(1)), eliminateDoubleImplication(e.myExpression
-							.get(0))));
+							.get(1)).deepCopy(), eliminateDoubleImplication(e.myExpression
+							.get(0))).deepCopy());
 		} else if (e instanceof And) {
 			Expression newLeft = eliminateDoubleImplication(e.myExpression
 					.get(0));
 			Expression newRight = eliminateDoubleImplication(e.myExpression
 					.get(1));
-			return new And(newLeft, newRight);
+			return new And(newLeft.deepCopy(), newRight.deepCopy());
 		} else if (e instanceof Or) {
 			Expression newLeft = eliminateDoubleImplication(e.myExpression
 					.get(0));
 			Expression newRight = eliminateDoubleImplication(e.myExpression
 					.get(1));
-			return new Or(newLeft, newRight);
+			return new Or(newLeft.deepCopy(), newRight.deepCopy());
 		} else if (e instanceof Implication) {
 			Expression newLeft = eliminateDoubleImplication(e.myExpression
 					.get(0));
 			Expression newRight = eliminateDoubleImplication(e.myExpression
 					.get(1));
-			return new Implication(newLeft, newRight);
+			return new Implication(newLeft.deepCopy(), newRight.deepCopy());
 		} else if (e instanceof UniversalQuantifier) {
 			Expression newExpression = eliminateDoubleImplication(e.myExpression
 					.get(0));
-			return new UniversalQuantifier(((UniversalQuantifier) e).variable,
-					newExpression);
+			return new UniversalQuantifier((Variable)((UniversalQuantifier) e).variable.deepCopy(),
+					newExpression.deepCopy());
 		} else if (e instanceof ExistentialQuantifier) {
 			Expression newExpression = eliminateDoubleImplication(e.myExpression
 					.get(0));
 			return new ExistentialQuantifier(
-					((ExistentialQuantifier) e).variable, newExpression);
+					(Variable)((ExistentialQuantifier) e).variable.deepCopy(), newExpression.deepCopy());
 		}
 		return null;
 	}

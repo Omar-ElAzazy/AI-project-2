@@ -1,4 +1,5 @@
 package unification;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public abstract class Expression implements Listifiable {
@@ -133,5 +134,9 @@ public abstract class Expression implements Listifiable {
 			}
 		}
 		return res;
+	}
+	
+	public Expression deepCopy() throws IOException{
+		return this;
 	}
 }

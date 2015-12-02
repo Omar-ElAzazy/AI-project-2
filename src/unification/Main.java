@@ -30,7 +30,7 @@ public class Main {
 		Function right4 = new Function(F, new Function(G, new Function(H, x)));
 
 		Unifier unifier = new Unifier();
-		HashMap<Variable, Expression> result = unifier.unify(left1, right1);
+		HashMap<Variable, Expression> result = unifier.unify(left1, right1, true);
 		if (result == null) {
 			System.out.println("Do not unify");
 		} else {
