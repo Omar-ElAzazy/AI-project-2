@@ -14,7 +14,6 @@ public class CNF {
 	public static boolean flattened = false;
 	
 	public static Expression clauseForm(Expression E, boolean trace) throws IOException {
-		if (trace == true) System.out.println("Tracing => " + E.toString());
 		E = eliminateDoubleImplication(E); if (trace == true) System.out.println("Tracing => " + E.toString());
 		E = eliminateImplication(E); if (trace == true) System.out.println("Tracing => " + E.toString());
 		E = pushNegationInwards(E, false); if (trace == true) System.out.println("Tracing => " + E.toString());
