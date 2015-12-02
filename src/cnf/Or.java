@@ -3,7 +3,6 @@ package cnf;
 import java.io.IOException;
 
 import unification.Expression;
-import unification.Variable;
 
 public class Or extends Expression{
 	public Or(Expression left, Expression right) throws IOException {
