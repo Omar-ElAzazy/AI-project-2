@@ -16,7 +16,7 @@ public class Main {
 		Expression e3 = new UniversalQuantifier(new Variable("x"), e4);
 		Expression e2 = new And(new Function(new Constant("P"), new Variable("x")), e3);
 		Expression e1 = new ExistentialQuantifier(new Variable("x"), e2);*/
-		
+
 		Expression e6 = new Function(new Constant("R"), new Variable("y"), new Variable("x"));
 		Expression e5 = new And(new Function(new Constant("Q"), new Variable("x")), e6);
 		Expression e4 = new ExistentialQuantifier(new Variable("y"), e5);

@@ -19,7 +19,7 @@ public class UniversalQuantifier extends Expression{
 			res = super.myExpression.get(0).toString();
 		}
 		else {
-			return "(∀ " + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
+			return "(∀" + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
 		}
 		if (negated == true) {
 			res = "!(" + res + ")";
