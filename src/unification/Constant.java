@@ -18,4 +18,11 @@ public class Constant extends Expression {
 		}
 		return res;
 	}
+	
+	@Override
+	public Expression deepCopy() throws IOException{
+		Constant copy = new Constant(new String(name));
+		copy.negated = negated;
+		return copy;
+	}
 }

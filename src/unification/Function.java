@@ -33,4 +33,14 @@ public class Function extends Expression {
 		}
 		return res;
 	}
+	
+	@Override
+	public Expression deepCopy() throws IOException{
+		Function func = new Function(new Constant(((Constant)myExpression.get(0)).name));
+		for(int q = 1; q < myExpression.size(); q++){
+			func.myExpression.add(myExpression.get(q).deepCopy());
+		}
+		func.negated = negated;
+		return func;
+	}
 }

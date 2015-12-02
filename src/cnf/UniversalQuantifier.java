@@ -1,5 +1,7 @@
 package cnf;
 
+import java.io.IOException;
+
 import unification.Expression;
 import unification.Variable;
 
@@ -19,11 +21,18 @@ public class UniversalQuantifier extends Expression{
 			res = super.myExpression.get(0).toString();
 		}
 		else {
-			return "(∀ " + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
+			return "(∀" + variable.toString() + " " + super.myExpression.get(0).toString() + ")";
 		}
 		if (negated == true) {
 			res = "!(" + res + ")";
 		}
 		return res;
+	}
+	
+	@Override
+	public Expression deepCopy() throws IOException{
+		UniversalQuantifier copy = new UniversalQuantifier((Variable)variable.deepCopy(), myExpression.get(0).deepCopy());
+		copy.negated = negated;
+		return copy;
 	}
 }
