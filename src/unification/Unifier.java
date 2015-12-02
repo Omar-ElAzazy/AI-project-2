@@ -11,27 +11,30 @@ public class Unifier {
 		unificationsStr = "";
 	}
 
-	public HashMap<Variable, Expression> unify(Expression e1, Expression e2)
+	public HashMap<Variable, Expression> unify(Expression e1, Expression e2, boolean traceMode)
 			throws IOException {
 		return unify(e1.listify(), e2.listify(),
-				new HashMap<Variable, Expression>());
+				new HashMap<Variable, Expression>(), traceMode);
 	}
 
 	private HashMap<Variable, Expression> unify(ArrayList<Expression> e1,
 			ArrayList<Expression> e2,
-			HashMap<Variable, Expression> unificationSet) throws IOException {
+			HashMap<Variable, Expression> unificationSet, boolean traceMode) throws IOException {
 		if (e1.size() == 1 && e1.get(0) instanceof Function) {
 			e1 = e1.get(0).listify();
 		}
 		if (e2.size() == 1 && e2.get(0) instanceof Function) {
 			e2 = e2.get(0).listify();
 		}
-		System.out.println("e1 = " + e1.toString());
-		System.out.println("e2 = " + e2.toString());
-		if (unificationSet != null) {
-			System.out.println("meow = " + unificationSet.toString());
-		} else {
-			System.out.println("meow = null");
+		
+		if(traceMode){
+			System.out.println("e1 = " + e1.toString());
+			System.out.println("e2 = " + e2.toString());
+			if (unificationSet != null) {
+				System.out.println("meow = " + unificationSet.toString());
+			} else {
+				System.out.println("meow = null");
+			}
 		}
 		if (unificationSet == null) {
 			return null;
@@ -40,10 +43,10 @@ public class Unifier {
 			return unificationSet;
 		}
 		if (Helper.isVariable(e1)) {
-			return unifyVar(Helper.parseVariable(e1), e2, unificationSet);
+			return unifyVar(Helper.parseVariable(e1), e2, unificationSet, traceMode);
 		}
 		if (Helper.isVariable(e2)) {
-			return unifyVar(Helper.parseVariable(e2), e1, unificationSet);
+			return unifyVar(Helper.parseVariable(e2), e1, unificationSet, traceMode);
 		}
 		if (Helper.isConstant(e1) || Helper.isConstant(e2)) {
 			return null;
@@ -56,8 +59,8 @@ public class Unifier {
 		Expression removed1 = e1.remove(0);
 		Expression removed2 = e2.remove(0);
 		HashMap<Variable, Expression> newUS = unify(removed1.listify(),
-				removed2.listify(), unificationSet);
-		return unify(e1, e2, newUS);
+				removed2.listify(), unificationSet, traceMode);
+		return unify(e1, e2, newUS, traceMode);
 	}
 
 	private boolean equals(ArrayList<Expression> e1, ArrayList<Expression> e2) {
@@ -74,16 +77,18 @@ public class Unifier {
 
 	private HashMap<Variable, Expression> unifyVar(Variable var,
 			ArrayList<Expression> expList,
-			HashMap<Variable, Expression> unificationSet) throws IOException {
-		System.out.println("Entered unifyVar with variable " + var.toString()
-				+ " and expression list " + expList.toString());
+			HashMap<Variable, Expression> unificationSet, boolean traceMode) throws IOException {
+		if(traceMode){
+			System.out.println("Entered unifyVar with variable " + var.toString()
+					+ " and expression list " + expList.toString());
+		}
 		Expression boundTo = unificationSet.get(var);
 		if (boundTo != null) {
 			if (!(boundTo instanceof Variable && var == (Variable) boundTo)) {
 				// ArrayList<Expression> tmp = new ArrayList<Expression>();
 				// tmp.add(boundTo);
 				// return unify(tmp, expList, unificationSet);
-				return unify(boundTo.listify(), expList, unificationSet);
+				return unify(boundTo.listify(), expList, unificationSet, traceMode);
 			}
 		}
 		// substituteOld(unificationSet, expList);
